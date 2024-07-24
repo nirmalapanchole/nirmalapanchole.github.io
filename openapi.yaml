@@ -1,0 +1,242 @@
+openapi: 3.0.3
+info:
+  title: payment api
+  version: "1.0"
+  description: This documentation describes 4 endpoints namely /payments, /apiStatus, /payments/{transaction_id}, /signUp
+    You can use this documentation to send requests to the servers too. This is written using OAS.
+  termsOfService: https://www.bhimupi.org.in/terms-conditions
+  contact:
+    name: nirmala panchole
+    email: nirmala.panchole@npci.org.in
+servers:
+ - url: http://127.0.0.1:5000
+   description: Development Server
+ - url: http://192.4.8.1:5000
+   description: Production Server
+paths: 
+  /apiStatus:
+    get:
+      responses:
+        '200':
+          description: A message is saying api is up or not
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type:
+                      string
+                  status:
+                    type:
+                      integer
+                  payerDetails:
+                    type: object
+                    properties:
+                      name:
+                        type:
+                          string
+                      mobile:
+                        type:
+                          integer
+                          
+  /payments:
+    post:
+      responses:
+        '201':
+          description: Make a payment
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amount:
+                    type: integer
+                  payer_upi:
+                    type: string
+                  payee_upi:
+                    type: string
+                  note:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                  transaction_id:
+                    type: string
+                  remarks:
+                    type: string
+              
+              example:
+                txn_1:
+                  value:
+                    "amount": 300
+                    "note": "coffee"
+                    "payer_upi": "abc@idfc"
+                    "payee_upi": "xyz@icici"
+                    "status": "processing"
+                    "transaction_id": "a675b8087-567ed-987o8"
+                    "timestamp": "12:00:15"
+                txn_2:
+                  value:
+                    "amount": 2000
+                    "note": "fuel"
+                    "payer_upi": "nir@hdfc"
+                    "payee_upi": "pan@icici"
+                    "status": "initiated"
+                    "transaction_id": "0987087-a567ed-987o8"
+                    "timestamp": "07:30:15"
+                txn_3:
+                  value:
+                    "amount": 6700
+                    "note": "sandwich"
+                    "payer_upi": "nirmala@okhdfc"
+                    "payee_upi": "merchant1@okicici"
+                    "status": "initiated"
+                    "transaction_id": "5678087-567ed-987o8"
+                    "timestamp": "02:15:55"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+                payer_upi:
+                  type: string
+                payee_upi:
+                  type: string
+                note:
+                  type: string
+              additionalProperties: false
+              required:
+                - amount
+                - payer_upi
+                - payee_upi
+  /payments/{transaction_id}:
+    put:
+      description: Updating a transaction by transaction ID
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+                payer_upi:
+                  type: string
+                payee_upi:
+                  type: string
+                note:
+                  type: string
+          
+      responses:
+        '200':
+          description: Payment initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amount:
+                    type: integer
+                  payer_upi:
+                    type: string
+                  payee_upi:
+                    type: string
+                  note:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                  transaction_id:
+                    type: string
+          
+    delete:
+      description: Deleting a payment by transaction id
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+      
+      responses:
+        '204':
+          description: payment deleted successfully
+          
+    get:
+      description: fetch transction details with transaction id
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    type: string
+                  payer_upi:
+                    type: string
+                  payee_upi:
+                    type: string
+                  timestamp:
+                    type: string
+                  status:
+                    type: string
+                  note:
+                    type: string
+              
+              example:
+                txn_1:
+                  value:
+                    "amount": 300
+                    "note": "coffee"
+                    "payer_upi": "abc@idfc"
+                    "payee_upi": "xyz@icici"
+                    "status": "processing"
+                    "transaction_id": "a675b8087-567ed-987o8"
+                    "timestamp": "12:00:15 pm"
+                txn_2:
+                  value:
+                    "amount": 2000
+                    "note": "fuel"
+                    "payer_upi": "nir@hdfc"
+                    "payee_upi": "pan@icici"
+                    "status": "initiated"
+                    "transaction_id": "0987087-a567ed-987o8"
+                    "timestamp": "07:30:15 am"
+                txn_3:
+                  value:
+                    "amount": 6700
+                    "note": "sandwich"
+                    "payer_upi": "nirmala@okhdfc"
+                    "payee_upi": "merchant1@okicici"
+                    "status": "initiated"
+                    "transaction_id": "5678087-567ed-987o8"
+                    "timestamp": "02:15:55 pm"
+              
+        '401':
+          description: incorrect request format
+          content: {}
